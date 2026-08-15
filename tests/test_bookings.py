@@ -32,3 +32,10 @@ def test_filtro_encontra_o_id_criado(api, booking):
     assert status == 200
     assert {'bookingid': booking_id} in body
 
+
+def test_update_sem_autenticacao_nao_altera_reserva(api, booking):
+    booking_id, original = booking
+    status, _ = api('PUT', f'/booking/{booking_id}', {**original, 'totalprice': 1})
+    assert status == 403
+    assert api('GET', f'/booking/{booking_id}') == (200, original)
+
