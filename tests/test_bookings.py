@@ -39,3 +39,9 @@ def test_update_sem_autenticacao_nao_altera_reserva(api, booking):
     assert status == 403
     assert api('GET', f'/booking/{booking_id}') == (200, original)
 
+
+def test_delete_sem_autenticacao_nao_remove_reserva(api, booking):
+    booking_id, original = booking
+    assert api('DELETE', f'/booking/{booking_id}')[0] == 403
+    assert api('GET', f'/booking/{booking_id}') == (200, original)
+
