@@ -45,3 +45,9 @@ def test_delete_sem_autenticacao_nao_remove_reserva(api, booking):
     assert api('DELETE', f'/booking/{booking_id}')[0] == 403
     assert api('GET', f'/booking/{booking_id}') == (200, original)
 
+
+def test_exclusao_autenticada_remove_reserva(api, token, booking):
+    booking_id, _ = booking
+    assert api('DELETE', f'/booking/{booking_id}', token=token)[0] == 201
+    assert api('GET', f'/booking/{booking_id}')[0] == 404
+
