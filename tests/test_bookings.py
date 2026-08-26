@@ -51,3 +51,8 @@ def test_exclusao_autenticada_remove_reserva(api, token, booking):
     assert api('DELETE', f'/booking/{booking_id}', token=token)[0] == 201
     assert api('GET', f'/booking/{booking_id}')[0] == 404
 
+
+def test_credenciais_invalidas_nao_retornam_token(api):
+    status, body = api('POST', '/auth', {'username': 'invalid-portfolio', 'password': 'invalid'})
+    assert status == 200
+    assert body == {'reason': 'Bad credentials'}
