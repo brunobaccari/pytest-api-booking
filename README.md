@@ -1,5 +1,7 @@
 # Restful Booker — Python e pytest
 
+[English version](README.en.md)
+
 Testes HTTP contra **https://restful-booker.herokuapp.com**. O foco é contrato, persistência e autorização sobre reservas criadas pela própria execução.
 
 ## Instalação
@@ -7,6 +9,7 @@ Testes HTTP contra **https://restful-booker.herokuapp.com**. O foco é contrato,
 Python 3.12 ou superior. Crie um ambiente com `python -m venv .venv` e ative com `.venv\Scripts\activate` no Windows ou `source .venv/bin/activate` no Linux/macOS.
 
 ```bash
+cp .env.example .env
 python -m pip install -r requirements.txt
 python -m pytest -q --junitxml=results/junit.xml
 ```
