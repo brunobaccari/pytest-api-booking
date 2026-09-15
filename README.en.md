@@ -35,4 +35,8 @@ GitHub Actions publishes `results/junit.xml`. See [Actions runs and artifacts](h
 
 References: [API documentation](https://restful-booker.herokuapp.com/apidoc/index.html) and [Robot Framework's official example](https://docs.robotframework.org/docs/examples/restfulbooker).
 
+## GitHub Actions results
+
+In GitHub, open **Actions → Tests → run → Summary** for status and counts. Under **Artifacts**, download `results`, which contains `junit.xml`. Reports are uploaded even when tests fail and retained for 30 days.
+
 Commit dates in this portfolio were reorganized retroactively; Actions runs retain their actual execution dates.

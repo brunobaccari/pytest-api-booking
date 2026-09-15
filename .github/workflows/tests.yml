@@ -8,16 +8,67 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - name: Verificar arquivos versionados
+        shell: bash
+        run: |
+          tracked=$(git ls-files --cached --ignored --exclude-standard)
+          if [ -n "$tracked" ]; then
+            printf 'Arquivos ignorados versionados:\n%s\n' "$tracked"
+            exit 1
+          fi
       - run: cp .env.example .env
       - uses: actions/setup-python@v5
         with:
           python-version: '3.14'
           cache: pip
       - run: python -m pip install -r requirements.txt
-      - run: python -m pytest -q --junitxml=results/junit.xml
+      - name: Executar testes
+        id: tests
+        run: python -m pytest -q --junitxml=results/junit.xml
       - uses: actions/upload-artifact@v4
+        id: artifact
         if: always()
         with:
           name: results
           path: results/
-          retention-days: 7
+          retention-days: 30
+          if-no-files-found: warn
+      - name: Resumo dos testes
+        if: always()
+        env:
+          TEST_OUTCOME: ${{ steps.tests.outcome }}
+          ARTIFACT_URL: ${{ steps.artifact.outputs.artifact-url }}
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          lines = ['## Testes', '', f"Etapa de testes: **{os.environ['TEST_OUTCOME']}**.", '']
+          report = Path('results/junit.xml')
+          invalid_report = False
+          if report.exists():
+              try:
+                  suites = list(ET.parse(report).getroot().iter('testsuite'))
+                  if not suites:
+                      raise ValueError('JUnit sem testsuite')
+                  counts = {key: 0 for key in ('tests', 'failures', 'errors', 'skipped')}
+                  for suite in suites:
+                      for key in counts:
+                          counts[key] += int(suite.attrib[key])
+                  passed = counts['tests'] - counts['failures'] - counts['errors'] - counts['skipped']
+                  if passed < 0 or any(value < 0 for value in counts.values()):
+                      raise ValueError('Contagens inconsistentes')
+                  lines += ['| Total | Passaram | Falharam | Erros | Ignorados |', '| --- | --- | --- | --- | --- |',
+                            f"| {counts['tests']} | {passed} | {counts['failures']} | {counts['errors']} | {counts['skipped']} |"]
+              except (ET.ParseError, OSError, ValueError, KeyError):
+                  invalid_report = True
+                  lines.append('**JUnit ilegível ou inválido: contagens indisponíveis; não há aprovação registrada.**')
+          else:
+              lines.append('JUnit não gerado: confira a instalação e a etapa de execução; isso não representa aprovação.')
+          url = os.environ.get('ARTIFACT_URL')
+          lines += ['', f'[Baixar relatórios desta execução]({url})' if url else 'Artifact indisponível: confira a etapa de upload.']
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as output:
+              output.write('\n'.join(lines) + '\n')
+          raise SystemExit(1 if invalid_report else 0)
+          PY

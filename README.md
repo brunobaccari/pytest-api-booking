@@ -43,4 +43,8 @@ Copie `.env.example` para `.env` (`Copy-Item .env.example .env` no PowerShell ou
 
 As contas do exemplo são públicas e exclusivas de demonstração. Para outro ambiente, injete credenciais via secrets do CI e confirme também o contrato e os dados esperados antes de executar.
 
+## Resultados no GitHub Actions
+
+No GitHub, abra **Actions → Tests → execução → Summary** para ver status e contagens. Em **Artifacts**, baixe `results`: contém `junit.xml`. Os relatórios são enviados mesmo se os testes falharem e ficam disponíveis por 30 dias.
+
 Datas de commits deste portfólio foram reorganizadas retroativamente; as execuções do Actions mantêm suas datas reais.
