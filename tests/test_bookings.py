@@ -1,4 +1,5 @@
 from urllib.parse import urlencode
+import pytest
 
 
 def test_criacao_pode_ser_consultada_com_contrato_completo(api, booking):
@@ -33,16 +34,13 @@ def test_filtro_encontra_o_id_criado(api, booking):
     assert {'bookingid': booking_id} in body
 
 
-def test_update_sem_autenticacao_nao_altera_reserva(api, booking):
+@pytest.mark.parametrize('credential', [None, 'invalid-portfolio-token'], ids=['sem-token', 'token-invalido'])
+@pytest.mark.parametrize('method', ['PUT', 'PATCH', 'DELETE'])
+def test_mutacao_sem_autorizacao_nao_altera_reserva(api, booking, method, credential):
     booking_id, original = booking
-    status, _ = api('PUT', f'/booking/{booking_id}', {**original, 'totalprice': 1})
+    data = None if method == 'DELETE' else {**original, 'totalprice': 1}
+    status, _ = api(method, f'/booking/{booking_id}', data, credential)
     assert status == 403
-    assert api('GET', f'/booking/{booking_id}') == (200, original)
-
-
-def test_delete_sem_autenticacao_nao_remove_reserva(api, booking):
-    booking_id, original = booking
-    assert api('DELETE', f'/booking/{booking_id}')[0] == 403
     assert api('GET', f'/booking/{booking_id}') == (200, original)
 
 
