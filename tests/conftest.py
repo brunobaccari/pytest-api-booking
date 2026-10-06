@@ -51,3 +51,4 @@ def booking(api, token):
         if booking_id is not None:
             cleanup_status, _ = api('DELETE', f'/booking/{booking_id}', token=token)
             assert cleanup_status in (201, 404, 405), f'Falha ao limpar reserva própria {booking_id}: {cleanup_status}'
+            assert api('GET', f'/booking/{booking_id}')[0] == 404, f'Reserva própria {booking_id} permaneceu após limpeza'
