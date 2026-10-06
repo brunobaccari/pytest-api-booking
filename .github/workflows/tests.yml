@@ -65,6 +65,7 @@ jobs:
                   invalid_report = True
                   lines.append('**JUnit ilegível ou inválido: contagens indisponíveis; não há aprovação registrada.**')
           else:
+              invalid_report = True
               lines.append('JUnit não gerado: confira a instalação e a etapa de execução; isso não representa aprovação.')
           url = os.environ.get('ARTIFACT_URL')
           lines += ['', f'[Baixar relatórios desta execução]({url})' if url else 'Artifact indisponível: confira a etapa de upload.']
