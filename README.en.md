@@ -31,7 +31,7 @@ The service uses its own status codes: create/update return 200, deletion return
 
 ## Evidence and limits
 
-GitHub Actions publishes `results/junit.xml`. See [Actions runs and artifacts](https://github.com/brunobaccari/python-api-booking/actions). This public service may change or reset. No load testing, mocks or local application. Private credentials belong in CI secrets if adapting this code.
+GitHub Actions publishes `results/junit.xml`. See [Actions runs and artifacts](https://github.com/brunobaccari/pytest-api-booking/actions). This public service may change or reset. No load testing, mocks or local application. Private credentials belong in CI secrets if adapting this code.
 
 References: [API documentation](https://restful-booker.herokuapp.com/apidoc/index.html) and [Robot Framework's official example](https://docs.robotframework.org/docs/examples/restfulbooker).
 

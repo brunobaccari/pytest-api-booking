@@ -33,7 +33,7 @@ Esta API usa códigos próprios: criação e atualização retornam 200; exclus�
 
 ## Relatórios
 
-JUnit em `results/junit.xml`, publicado pelo CI. [Execuções e artifacts no Actions](https://github.com/brunobaccari/python-api-booking/actions). Referências: [documentação da API](https://restful-booker.herokuapp.com/apidoc/index.html) e [exemplo oficial do Robot Framework para o serviço](https://docs.robotframework.org/docs/examples/restfulbooker).
+JUnit em `results/junit.xml`, publicado pelo CI. [Execuções e artifacts no Actions](https://github.com/brunobaccari/pytest-api-booking/actions). Referências: [documentação da API](https://restful-booker.herokuapp.com/apidoc/index.html) e [exemplo oficial do Robot Framework para o serviço](https://docs.robotframework.org/docs/examples/restfulbooker).
 
 Ambiente público compartilhado; mudanças externas podem afetar os testes. Não há carga, mocks, servidor local ou promessa de validação completa de regras de preço. A versão anterior de cálculo local foi substituída por estes testes hospedados.
 
