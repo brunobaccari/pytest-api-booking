@@ -47,4 +47,10 @@ As contas do exemplo são públicas e exclusivas de demonstração. Para outro a
 
 No GitHub, abra **Actions → Tests → execução → Summary** para ver status e contagens. Em **Artifacts**, baixe `results`: contém `junit.xml`. Os relatórios são enviados mesmo se os testes falharem e ficam disponíveis por 30 dias.
 
+## Critério de bloqueio e triagem
+
+A prioridade é autorização e integridade de dados: PUT, PATCH e DELETE são testados sem token e com token inválido. Cada recusa precisa manter a reserva idêntica; conferir apenas HTTP 403 não basta. A limpeza verifica GET 404 depois da exclusão, inclusive quando o serviço devolve 405 para uma reserva já removida.
+
+Alteração não autorizada, perda de campos, reserva restante após limpeza ou relatório ausente bloqueiam a execução. Erro de rede/indisponibilidade do ambiente público é falha de ambiente, não aprovação nem defeito comprovado do produto. Investigue a primeira resposta e a consulta posterior da reserva própria; não repita a suíte até ficar verde nem apague reservas de terceiros. Não há teste de autorização entre contas: o serviço de demonstração compartilha credenciais administrativas.
+
 Datas de commits deste portfólio foram reorganizadas retroativamente; as execuções do Actions mantêm suas datas reais.

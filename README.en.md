@@ -25,7 +25,7 @@ On PowerShell, use `Copy-Item .env.example .env`. Configure the API URL and publ
 - Delete with authentication and confirm a subsequent 404.
 - Reject invalid login credentials without returning a token.
 
-`tests/conftest.py` prepares authentication and uniquely named bookings. `tests/test_bookings.py` contains eight tests. Cleanup targets only the booking created by that test, including after failures.
+`tests/conftest.py` prepares authentication and uniquely named bookings. `tests/test_bookings.py` covers the scenarios above. Cleanup targets only the booking created by that test, including after failures.
 
 The service uses its own status codes: create/update return 200, deletion returns 201, and invalid login returns 200 with `reason`. Assertions follow that contract instead of generic REST assumptions.
 
@@ -38,5 +38,11 @@ References: [API documentation](https://restful-booker.herokuapp.com/apidoc/inde
 ## GitHub Actions results
 
 In GitHub, open **Actions → Tests → run → Summary** for status and counts. Under **Artifacts**, download `results`, which contains `junit.xml`. Reports are uploaded even when tests fail and retained for 30 days.
+
+## Blocking criteria and triage
+
+Authorization and data integrity take priority: PUT, PATCH and DELETE are tested with no token and with an invalid token. Every rejection must leave the booking unchanged; HTTP 403 alone is insufficient. Cleanup verifies GET 404 after deletion, including a 405 response for a booking already removed.
+
+Unauthorized changes, lost fields, bookings remaining after cleanup and missing reports block the run. Network/public-environment outages are environment failures, not passes or confirmed product defects. Inspect the first response and the subsequent read of the test-owned booking; do not rerun until green or delete other users' data. Cross-account authorization is not covered: the demo service shares administrative credentials.
 
 Commit dates in this portfolio were reorganized retroactively; Actions runs retain their actual execution dates.
