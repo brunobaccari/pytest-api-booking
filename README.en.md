@@ -46,3 +46,5 @@ Authorization and data integrity take priority: PUT, PATCH and DELETE are tested
 Unauthorized changes, lost fields, bookings remaining after cleanup and missing reports block the run. Network/public-environment outages are environment failures, not passes or confirmed product defects. Inspect the first response and the subsequent read of the test-owned booking; do not rerun until green or delete other users' data. Cross-account authorization is not covered: the demo service shares administrative credentials.
 
 Commit dates in this portfolio were reorganized retroactively; Actions runs retain their actual execution dates.
+
+The Actions summary lists every scenario, duration, totals and blocking reason. The gate requires the count configured in the workflow, with no failures or skips; missing or invalid JUnit fails the gate. The summary is also included in the artifact.

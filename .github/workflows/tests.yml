@@ -8,6 +8,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - name: Verificar parser e gate do summary
+        run: python3 scripts/summary.py --self-test
       - name: Verificar arquivos versionados
         shell: bash
         run: |
@@ -25,6 +27,15 @@ jobs:
       - name: Executar testes
         id: tests
         run: python -m pytest -q --junitxml=results/junit.xml
+      - name: Resumo dos testes e completude
+        if: always()
+        env:
+          TEST_OUTCOME: ${{ steps.tests.outcome }}
+          EXPECTED_TESTS: '12'
+          JUNIT_PATTERN: 'results/junit.xml'
+          SUMMARY_FILE: 'results/summary.md'
+          TEST_SCOPE: 'pytest / Restful Booker hospedado. Reservas sintéticas e limpeza dos dados da run.'
+        run: python3 scripts/summary.py
       - uses: actions/upload-artifact@v4
         id: artifact
         if: always()
@@ -32,44 +43,14 @@ jobs:
           name: results
           path: results/
           retention-days: 30
-          if-no-files-found: warn
-      - name: Resumo dos testes
+          if-no-files-found: error
+      - name: Link dos resultados
         if: always()
         env:
-          TEST_OUTCOME: ${{ steps.tests.outcome }}
           ARTIFACT_URL: ${{ steps.artifact.outputs.artifact-url }}
         run: |
-          python - <<'PY'
-          import os
-          from pathlib import Path
-          import xml.etree.ElementTree as ET
-
-          lines = ['## Testes', '', f"Etapa de testes: **{os.environ['TEST_OUTCOME']}**.", '']
-          report = Path('results/junit.xml')
-          invalid_report = False
-          if report.exists():
-              try:
-                  suites = list(ET.parse(report).getroot().iter('testsuite'))
-                  if not suites:
-                      raise ValueError('JUnit sem testsuite')
-                  counts = {key: 0 for key in ('tests', 'failures', 'errors', 'skipped')}
-                  for suite in suites:
-                      for key in counts:
-                          counts[key] += int(suite.attrib[key])
-                  passed = counts['tests'] - counts['failures'] - counts['errors'] - counts['skipped']
-                  if passed < 0 or any(value < 0 for value in counts.values()):
-                      raise ValueError('Contagens inconsistentes')
-                  lines += ['| Total | Passaram | Falharam | Erros | Ignorados |', '| --- | --- | --- | --- | --- |',
-                            f"| {counts['tests']} | {passed} | {counts['failures']} | {counts['errors']} | {counts['skipped']} |"]
-              except (ET.ParseError, OSError, ValueError, KeyError):
-                  invalid_report = True
-                  lines.append('**JUnit ilegível ou inválido: contagens indisponíveis; não há aprovação registrada.**')
-          else:
-              invalid_report = True
-              lines.append('JUnit não gerado: confira a instalação e a etapa de execução; isso não representa aprovação.')
-          url = os.environ.get('ARTIFACT_URL')
-          lines += ['', f'[Baixar relatórios desta execução]({url})' if url else 'Artifact indisponível: confira a etapa de upload.']
-          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as output:
-              output.write('\n'.join(lines) + '\n')
-          raise SystemExit(1 if invalid_report else 0)
-          PY
+          if [ -n "$ARTIFACT_URL" ]; then
+            printf '\n[Baixar relatórios e evidências](%s)\n' "$ARTIFACT_URL" >> "$GITHUB_STEP_SUMMARY"
+          else
+            printf '\nArtifact indisponível; confira a etapa de upload.\n' >> "$GITHUB_STEP_SUMMARY"
+          fi

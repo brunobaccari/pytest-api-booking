@@ -54,3 +54,5 @@ A prioridade é autorização e integridade de dados: PUT, PATCH e DELETE são t
 Alteração não autorizada, perda de campos, reserva restante após limpeza ou relatório ausente bloqueiam a execução. Erro de rede/indisponibilidade do ambiente público é falha de ambiente, não aprovação nem defeito comprovado do produto. Investigue a primeira resposta e a consulta posterior da reserva própria; não repita a suíte até ficar verde nem apague reservas de terceiros. Não há teste de autorização entre contas: o serviço de demonstração compartilha credenciais administrativas.
 
 Datas de commits deste portfólio foram reorganizadas retroativamente; as execuções do Actions mantêm suas datas reais.
+
+O summary do Actions lista cada cenário, duração, totais e motivo de bloqueio. O gate exige a quantidade prevista no workflow, sem falhas ou skips; JUnit ausente ou inválido reprova. O resumo também acompanha o artifact.
